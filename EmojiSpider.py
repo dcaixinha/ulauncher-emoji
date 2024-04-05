@@ -87,10 +87,10 @@ def codepoint_to_url(codepoint, style):
             return 'https://github.com/twitter/twemoji/raw/master/assets/72x72/%s.png' \
                     % patched
     elif style == 'noto':
-        return 'https://github.com/googlefonts/noto-emoji/raw/master/png/128/emoji_u%s.png' \
+        return 'https://github.com/googlefonts/noto-emoji/raw/main/png/128/emoji_u%s.png' \
                 % base.replace(' ', '_')
     elif style == 'blobmoji':
-        return 'https://github.com/C1710/blobmoji/raw/master/png/128/emoji_u%s.png' \
+        return 'https://github.com/C1710/blobmoji/raw/main/png/128/emoji_u%s.png' \
                 % base.replace(' ', '_')
 
 def name_to_shortcodes(shortname):
@@ -113,8 +113,8 @@ conn = setup_db()
 
 class EmojiSpider(scrapy.Spider):
     name = 'emojispider'
-    start_urls = ['http://unicode.org/emoji/charts/emoji-list.html',
-                  'http://unicode.org/emoji/charts/full-emoji-modifiers.html']
+    start_urls = ['https://unicode-org.github.io/emoji/emoji/charts-15.1/full-emoji-list.html',
+                  'https://unicode-org.github.io/emoji/emoji/charts-15.1/full-emoji-modifiers.html']
     # start_urls = ['http://172.17.0.1:8000/list2.html']
 
     def parse(self, response):
@@ -161,7 +161,7 @@ class EmojiSpider(scrapy.Spider):
             for style in EMOJI_STYLES:
                 if style == 'apple':
                     icon_data = tr.css('.andr img').xpath('@src').extract_first().split('base64,')[1]
-                    icon_data = base64.decodestring(icon_data.encode('utf-8'))
+                    icon_data = base64.decodebytes(icon_data.encode('utf-8'))
                 else:
                     link = codepoint_to_url(code, style)
                     resp = requests.get(link)
